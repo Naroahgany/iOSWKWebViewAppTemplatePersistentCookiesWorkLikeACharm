@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- ✅【后台保活】允许后台播放音频 -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>audio</string>
-        <string>fetch</string>
-    </array>
 
     <!-- ✅【名称设置】 -->
     <key>CFBundleDisplayName</key>
@@ -15,7 +9,7 @@
     <key>CFBundleName</key>
     <string>FangYiKai</string>
     
-    <!-- ✅【高清图标索引】直接指向根目录文件，不使用 Assets.car -->
+    <!-- ✅【高清图标索引】直接指向根目录文件 -->
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>CFBundleIcons</key>
