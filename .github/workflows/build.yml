@@ -1,4 +1,4 @@
-name: Kingfall Ultimate (HD Icons + Audio)
+name: Kingfall Pure Build (HD Icons Only)
 
 on:
   workflow_dispatch:  # 手动触发
@@ -60,35 +60,28 @@ jobs:
           SRC="${{ env.SOURCE_ICON_PATH }}"
           
           echo "💎 正在执行【原图直出】植入..."
-          echo "警告：不进行任何裁剪或压缩，确保最高清晰度。"
           
-          # 2. 【核心操作】直接复制原图到所有可能的系统文件名
-          # 无论系统要60px还是180px，我们都给它喂这张高清大图
-          
-          # iPhone 格式
+          # 2. 直接复制原图到所有可能的系统文件名
           cp "$SRC" "$TARGET_DIR/AppIcon60x60@2x.png"
           cp "$SRC" "$TARGET_DIR/AppIcon60x60@3x.png"
-          
-          # iPad 格式
           cp "$SRC" "$TARGET_DIR/AppIcon76x76@2x.png"
           cp "$SRC" "$TARGET_DIR/AppIcon83.5x83.5@2x.png"
           
-          # 通用兜底格式 (防止 Info.plist 配置遗漏)
+          # 通用兜底
           cp "$SRC" "$TARGET_DIR/AppIcon.png"
           cp "$SRC" "$TARGET_DIR/AppIcon@2x.png"
           cp "$SRC" "$TARGET_DIR/AppIcon@3x.png"
           cp "$SRC" "$TARGET_DIR/Icon.png"
           cp "$SRC" "$TARGET_DIR/Icon@2x.png"
           
-          # 3. 验证文件大小 (原图通常较大，如果文件很大说明复制成功)
-          echo "📊 检查植入结果 (文件大小应与原图一致):"
+          # 3. 验证
           ls -lh "$TARGET_DIR" | grep "png"
 
           # 4. 打包
-          zip -ry "FangYiKai_Ultimate.ipa" Payload
+          zip -ry "FangYiKai_Pure.ipa" Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: FangYiKai_Ultimate_IPA
+          name: FangYiKai_Pure_IPA
           path: ./*.ipa
