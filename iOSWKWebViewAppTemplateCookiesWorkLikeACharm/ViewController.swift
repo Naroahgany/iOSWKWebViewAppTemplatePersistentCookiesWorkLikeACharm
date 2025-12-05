@@ -2,15 +2,15 @@
 //  ViewController.swift
 //  iOSWKWebViewAppTemplateCookiesWorkLikeACharm
 //
-//  Kingfall V7: 后台保活 + 混音模式 (MixWithOthers)
+//  Kingfall V8: 纯净混音修复版 (No Ducking, Pure Mixing)
 //
 
 import UIKit
 import WebKit
-import AVFoundation // 引入音频框架
+import AVFoundation // 核心音频框架
 
 // 👇👇👇【请只修改下面这一行引号里的网址】👇👇👇
-let myTargetUrl = "https://ngjgc4ugkxpsxzdxngashmha6bl54s3mrtcbg.netlify.app"
+let myTargetUrl = "https://m.bilibili.com"
 // 👆👆👆【改成你的 AI 聊天网页地址】👆👆👆
 
 class ViewController: UIViewController {
@@ -24,12 +24,22 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // --- ✅【Kingfall 核心升级】配置音频会话：允许后台 + 混音 ---
+        // --- ✅【Kingfall 核心修复】音频会话配置 V8 ---
         do {
-            // 设置为 Playback (后台播放必备)，并允许 MixWithOthers (不打断其他音乐)
-            try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers, .duckOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
-            print("✅ Audio Session Configured Successfully: Playback + MixWithOthers")
+            // 1. 获取音频会话单例
+            let audioSession = AVAudioSession.sharedInstance()
+            
+            // 2. 设置 Category 为 Playback
+            //    原因：只有 Playback 才能在锁屏/后台时保持 App 运行。
+            // 3. 设置 Options 为 .mixWithOthers
+            //    关键点：这里去掉了 .duckOthers，确保不降低背景音乐音量。
+            //    关键点：.mixWithOthers 确保 App 音频与网易云音乐共存，而不是打断它。
+            try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            
+            // 4. 激活会话
+            try audioSession.setActive(true)
+            
+            print("✅ Audio Session Configured: Playback + MixWithOthers (No Ducking)")
         } catch {
             print("❌ Failed to configure Audio Session: \(error)")
         }
@@ -58,10 +68,15 @@ class ViewController: UIViewController {
             webView.uiDelegate = self
             webView.navigationDelegate = self
             
-            // 允许网页自动播放音频（对静音脚本很重要）
+            // --- ✅【网页媒体权限增强】 ---
+            // 允许网页不经过用户点击就能自动播放音频（防止静音脚本被拦截）
             webView.configuration.mediaTypesRequiringUserActionForPlayback = []
+            // 允许内联播放，防止全屏播放器弹出
             webView.configuration.allowsInlineMediaPlayback = true
+            // 允许画中画（虽然静音音频用不到，但能增加保活权重）
+            webView.configuration.allowsPictureInPictureMediaPlayback = true
             
+            // 注入 Viewport 适配代码
             let source: String = "var meta = document.createElement('meta');" +
                 "meta.name = 'viewport';" +
                 "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';" +
@@ -74,7 +89,7 @@ class ViewController: UIViewController {
     }
 }
 
-// Cookie 保持逻辑
+// 下面是 Cookie 持久化逻辑，保持不变
 extension WKWebView {
     enum PrefKey { static let cookie = "cookies" }
     
