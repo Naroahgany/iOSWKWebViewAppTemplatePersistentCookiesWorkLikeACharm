@@ -1,0 +1,67 @@
+name: Auto Build IPA
+
+on:
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Smart Build IPA
+        run: |
+          # --- 智能查找项目名称 ---
+          # 自动寻找文件夹下的 .xcodeproj 文件，不管它叫什么名字
+          PROJECT_FILE=$(find . -maxdepth 2 -name "*.xcodeproj" | head -n 1)
+          if [ -z "$PROJECT_FILE" ]; then
+            echo "错误：找不到 .xcodeproj 项目文件！"
+            exit 1
+          fi
+          
+          # 去掉后缀，获取纯项目名
+          PROJECT_NAME=$(basename "$PROJECT_FILE" .xcodeproj)
+          SCHEME_NAME="$PROJECT_NAME"
+          
+          echo "✅ 检测到项目名称: $PROJECT_NAME"
+
+          # --- 清理与构建 ---
+          xcodebuild clean -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -configuration Release
+
+          # 编译生成 .app (禁用签名，防止报错)
+          xcodebuild build \
+            -project "$PROJECT_NAME.xcodeproj" \
+            -scheme "$SCHEME_NAME" \
+            -configuration Release \
+            -derivedDataPath build \
+            -sdk iphoneos \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+          # --- 打包 IPA ---
+          mkdir Payload
+          # 查找生成的 .app 文件
+          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "*.app" | head -n 1)
+          
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ 构建失败，未找到 .app 文件"
+            exit 1
+          fi
+
+          echo "✅ 正在打包: $APP_PATH"
+          cp -r "$APP_PATH" Payload/
+          zip -r "MyWebApp.ipa" Payload
+
+      - name: Upload IPA to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyWebApp_IPA
+          path: ./*.ipa
