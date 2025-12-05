@@ -2,10 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- ✅【修正】桌面显示名称（中文） -->
+	<!-- ✅【核心修复】告诉系统图标叫什么名字 -->
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+	
+	<!-- ✅ 桌面显示名称 -->
 	<key>CFBundleDisplayName</key>
 	<string>方亦楷</string>
-	<!-- ✅【修正】内部系统名称（必须英文，否则SideStore报错） -->
+	<!-- ✅ 内部名称 (保持英文防止报错) -->
 	<key>CFBundleName</key>
 	<string>FangYiKai</string>
 	
