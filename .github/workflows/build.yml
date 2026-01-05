@@ -34,7 +34,7 @@ jobs:
           SCHEME_NAME="$PROJECT_NAME"
           
           # 生成随机 ID，防止 SideStore 缓存冲突
-          RANDOM_ID="com.fangyikai.app.$(date +%s)"
+          RANDOM_ID="com.archer.app.$(date +%s)"
           
           xcodebuild clean -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -configuration Release
           
@@ -78,10 +78,10 @@ jobs:
           ls -lh "$TARGET_DIR" | grep "png"
 
           # 4. 打包
-          zip -ry "FangYiKai_Pure.ipa" Payload
+          zip -ry "Archer.ipa" Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: FangYiKai_Pure_IPA
+          name: Archer_IPA
           path: ./*.ipa
