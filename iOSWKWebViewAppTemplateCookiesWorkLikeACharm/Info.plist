@@ -5,9 +5,9 @@
 
     <!-- ✅【名称设置】 -->
     <key>CFBundleDisplayName</key>
-    <string>方亦楷</string>
+    <string>Archer</string>
     <key>CFBundleName</key>
-    <string>FangYiKai</string>
+    <string>Archer</string>
     
     <!-- ✅【高清图标索引】直接指向根目录文件 -->
     <key>CFBundleIconName</key>
